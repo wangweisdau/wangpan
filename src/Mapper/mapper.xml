@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Mapper.mapper">
+
+
+
+<insert id="keyfactory" parameterType="Table.keyfactory">
+
+<selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
+			SELECT id FROM keyfactory ORDER BY id DESC LIMIT 1
+		</selectKey> 
+		insert into keyfactory(used) values (1)
+
+</insert>
+
+
+
+
+	<select id="selectall" resultType="Table.disktable">
+		select *
+		from disktable
+	</select>
+
+
+	<select id="selectbystyle" parameterType="java.util.Map"
+		resultType="Table.disktable" statementType="STATEMENT">
+		select * from ${tablename}
+		where id in (select id from ${attributetable}style where ${attribute} ='true')
+	</select>
+
+
+	<select id="select" parameterType="java.util.Map" resultType="Table.disktable"
+		statementType="STATEMENT">
+
+		select * from ${tablename} where id=${id}
+
+	</select>
+
+
+	<insert id="insert" parameterType="Table.disktable" >
+<!-- 		<selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
+			SELECT id FROM disktable ORDER BY id DESC LIMIT 1
+		</selectKey>  -->
+		
+		insert into disktable values
+		(#{id},#{filename},#{randname},now(),#{realname},#{filesize},'true')
+
+	</insert>
+
+
+
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from disktable where
+		id=#{id}
+
+	</delete>
+
+	<delete id="deletepro" parameterType="java.util.Map"
+		statementType="STATEMENT">
+		delete from ${tablename} where id=${id}
+
+	</delete>
+
+
+
+
+
+	<select id="userCheckSelect" parameterType="Table.disktableuser"
+		resultType="Table.disktableuser">
+
+		select * from disktableuser where username=#{username} and
+		password=#{password}
+
+	</select>
+
+	<insert id="insertNewUser" parameterType="Table.disktableuser">
+		<selectKey keyProperty="userattributeid" resultType="java.lang.Integer" order="AFTER">
+			SELECT userattributeid FROM disktableuser ORDER BY userattributeid DESC LIMIT 1
+		</selectKey> 
+		insert into disktableuser values (#{username} ,
+		#{password},1,null,#{email},'false','false',#{activationcode})
+	</insert>
+
+
+<select id="selectadmin" parameterType="Table.disktableuser" resultType="Table.disktableuser">
+select * from disktableuser where username=#{username}
+
+</select>
+
+<update id="addnewadmin" parameterType="Table.disktableuser">
+update disktableuser set admin='true' where username=#{username}
+
+</update>
+
+
+	<insert id="insertuserattritute" parameterType="Table.userattribute">
+
+		insert into
+		userattribute values
+		(#{userattributeid},null,#{prospacesize},#{filelocation},#{prodisktablename},'0')
+
+	</insert>
+
+	<update id="createdisktablePro" parameterType="java.util.Map">
+
+		create table ${tablename} as (select * from disktable where 1=0)
+
+
+	</update>
+	<update id="createdisktablePro2" parameterType="java.util.Map">
+
+		alter table ${tablename} modify shareflag varchar(10) default 'false'
+
+	</update>
+
+
+	<update id="updateProflag" parameterType="java.util.Map">
+
+		update ${tablename} set shareflag='false' where id=${id}
+
+	</update>
+
+
+
+
+
+	<select id="selectuserattributebyuser" parameterType="Table.disktableuser"
+		resultType="Table.userattribute">
+
+		select a.* from disktableuser u,userattribute a where
+		u.userattributeid=a.userattributeid and username=#{username} and
+		password=#{password}
+
+	</select>
+
+
+	<insert id="insertdisktablePro" statementType="STATEMENT"
+		parameterType="java.util.Map">
+		insert into ${tablename} values (${id},
+		'${filename}' , '${randname}' , now() , '${realname}' , ${filesize}
+		, 'false')
+	</insert>
+
+
+
+
+
+
+
+
+	<update id="updateusedspacesizebyid" parameterType="Table.userattribute">
+		update
+		userattribute set usedspacesize=#{usedspacesize} where
+		userattributeid=#{userattributeid}
+
+	</update>
+
+	<select id="selectallpro" parameterType="java.util.Map"
+		resultType="Table.disktable" statementType="STATEMENT">
+		select * from
+		${tablename}
+	</select>
+
+	<select id="registercheck" parameterType="Table.disktableuser"
+		resultType="Table.disktableuser">
+
+		select * from disktableuser where username=#{username} or email=#{email}
+
+	</select>
+
+	<select id="emailcheck" parameterType="Table.disktableuser"
+		resultType="Table.disktableuser">
+
+		select * from disktableuser where email=#{email}
+
+	</select>
+
+
+	<update id="updatepassword" parameterType="Table.disktableuser">
+		update disktableuser set password=#{password} where email=#{email}
+
+	</update>
+
+
+	<insert id="insertstyle" parameterType="java.util.Map"
+		statementType="STATEMENT">
+
+		insert into ${tablename}style(id${attribute}) values (${id}${value})
+
+
+	</insert>
+
+
+	<insert id="shareuserfiletablebyid" parameterType="java.util.Map"
+		statementType="STATEMENT">
+
+		insert into disktable  (select id,filename,randname,time,realname,filesize,'${tablenamepro}' from ${tablename} where id=${id})
+
+	</insert>
+
+
+	<update id="updateshareflag" parameterType="java.util.Map">
+
+		update ${tablename} set shareflag='true' where id=${id} and shareflag='false'
+
+	</update>
+
+<update id="activecheck" parameterType="Table.disktableuser" >
+
+<!-- update disktableuser set activation='true' where userattributeid=(select userattributeid from disktableuser where email=#{email} and activationcode=#{activationcode})
+ -->
+ update disktableuser set activation='true' where userattributeid=(select userattributeid from (select * from disktableuser) as b where email=#{email} and activationcode=#{activationcode})
+
+
+</update>
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

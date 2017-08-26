@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Mapper.mapper">
+
+	<select id="selectall" resultType="Table.disktable">
+		select * from disktable
+	</select>
+
+
+	<select id="select" parameterType="java.lang.Integer"
+		resultType="Table.disktable">
+
+		select * from disktable where id=#{id}
+
+	</select>
+
+	<insert id="insert" parameterType="Table.disktable">
+		insert into disktable values (xulie.nextval,#{filename},#{randname},sysdate,#{realname},#{filesize})
+	</insert>
+
+	<delete id="delete" parameterType="java.lang.Integer"  >
+		delete from disktable where id=#{id}
+
+
+	</delete>
+
+     <select id="userCheckSelect" parameterType="Table.disktableuser"
+		resultType="Table.disktableuser">
+
+		select * from disktableuser where username=#{username} and password=#{password}
+
+	</select> 
+	
+	<insert id="insertNewUser" parameterType="Table.disktableuser">
+	
+	    insert into disktableuser values (#{username} , #{password},userxulie.nextval)
+	</insert>
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
